@@ -19,9 +19,8 @@ public class Employee {
 	private String idNumber;
 	private String address;
 	
-	private int yearJoined;
-	private int monthJoined;
-	private int dayJoined;
+	private LocalDate joinDate;
+
 	private int monthWorkingInYear;
 	
 	private boolean isForeigner;
@@ -36,16 +35,15 @@ public class Employee {
 
 	private List<String> childNames;
 	private List<String> childIdNumbers;
+        private final LocalDate LocalDate;
 	
-	public Employee(String employeeId, String firstName, String lastName, String idNumber, String address, int yearJoined, int monthJoined, int dayJoined, boolean isForeigner, boolean gender) {
+	public Employee(String employeeId, String LocalDate, String firstName, String lastName, String idNumber, String address, int yearJoined, int monthJoined, int dayJoined, boolean isForeigner, boolean gender) {
 		this.employeeId = employeeId;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.idNumber = idNumber;
 		this.address = address;
-		this.yearJoined = yearJoined;
-		this.monthJoined = monthJoined;
-		this.dayJoined = dayJoined;
+		this.LocalDate = joinDate;
 		this.isForeigner = isForeigner;
 		this.gender = gender;
 		
@@ -97,17 +95,20 @@ public class Employee {
 		childIdNumbers.add(childIdNumber);
 	}
 	
+        private int calculateWorkingMonthsThisYear() {
+		LocalDate today = LocalDate.now();
+		if (today.getYear() == joinDate.getYear()) {
+			return today.getMonthValue() - joinDate.getMonthValue() + 1;
+		}
+		return 12;
+	}
+        
 	public int getAnnualIncomeTax() {
 		
 		//Menghitung berapa lama pegawai bekerja dalam setahun ini, jika pegawai sudah bekerja dari tahun sebelumnya maka otomatis dianggap 12 bulan.
-		LocalDate date = LocalDate.now();
+		int workingMonths = calculateWorkingMonthsThisYear();
+		int Income = (monthlySalary + otherMonthlyIncome) * workingMonths;
 		
-		if (date.getYear() == yearJoined) {
-			monthWorkingInYear = date.getMonthValue() - monthJoined;
-		}else {
-			monthWorkingInYear = 12;
-		}
-		
-		return TaxFunction.calculateTax(monthlySalary, otherMonthlyIncome, monthWorkingInYear, annualDeductible, spouseIdNumber.equals(""), childIdNumbers.size());
+		return 0; 
 	}
 }
